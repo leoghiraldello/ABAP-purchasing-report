@@ -1,0 +1,62 @@
+*&---------------------------------------------------------------------*
+*& Report  ZCOMPRAS_02_0515
+*&
+*&---------------------------------------------------------------------*
+*& Descricao: Relatorio de Compras
+*& Autor: Leonardo Ghiraldello - Data: 05/12/2023
+*&---------------------------------------------------------------------*
+
+REPORT ZCOMPRAS_02_0515.
+
+tables ekko.
+
+types: BEGIN OF ty_ekko,
+        ebeln type ekko-ebeln,
+        bukrs type ekko-bukrs,
+        aedat type ekko-aedat,
+        ernam type ekko-ernam,
+        ebelp type ekpo-ebelp,
+        matnr type ekpo-matnr,
+        menge type ekpo-menge,
+        meins type ekpo-meins,
+        netpr type ekpo-netpr,
+       END OF ty_ekko.
+
+data ti_ekko type TABLE OF ty_ekko.
+
+data wa_ekko type ty_ekko.
+
+SELECT-OPTIONS s_ebeln for ekko-ebeln.
+
+START-OF-SELECTION.
+
+select k~ebeln
+       k~bukrs
+       k~aedat
+       k~ernam
+       p~ebelp
+       p~matnr
+       p~menge
+       p~meins
+       p~netpr
+       from ekko as k
+       INNER JOIN ekpo as p
+       on k~ebeln = p~ebeln
+       into table ti_ekko
+       where k~ebeln in s_ebeln.
+
+if sy-subrc <> 0.
+  message text-m01 type 'I'.
+ENDIF.
+
+loop at ti_ekko into wa_ekko.
+  write: / wa_ekko-ebeln,
+           wa_ekko-bukrs,
+           wa_ekko-aedat,
+           wa_ekko-ernam,
+           wa_ekko-ebelp,
+           wa_ekko-matnr,
+           wa_ekko-menge,
+           wa_ekko-meins,
+           wa_ekko-netpr.
+ENDLOOP.
